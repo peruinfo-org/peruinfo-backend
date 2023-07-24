@@ -1,6 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 import pandas as pd
-from tqdm import tqdm
 
 from ...models import Padron
 
@@ -107,7 +106,5 @@ class Command(BaseCommand):
         
         non_existing_ruc_list = list(set(ruc_list) - set(existing_ruc_list))
         
-        return existing_ruc_list, non_existing_ruc_list
-            
-                
+        return existing_ruc_list, non_existing_ruc_list        
         

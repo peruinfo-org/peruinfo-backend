@@ -37,9 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     
     # my apps
-    'sunat.apps.SunatConfig',
+    'peruinfo.sunat.apps.SunatConfig',
 ]
 
 MIDDLEWARE = [
