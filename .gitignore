@@ -1,4 +1,4 @@
-
+.env
 .venv
 
 *.pyc
@@ -7,3 +7,4 @@
 *.sqlite3
 *.ipynb_checkpoints
 *.ipynb
+.space
