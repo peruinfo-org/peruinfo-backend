@@ -62,7 +62,7 @@ jobs:
       - name: Login to Deta Space
         env:
           DETA_TOKEN: ${{ secrets.DETA_TOKEN }}
-        run: cat $DETA_TOKEN | space login --with-token
+        run: $DETA_TOKEN | space login --with-token
 
       - name: Deploy to Deta Space
         env:
