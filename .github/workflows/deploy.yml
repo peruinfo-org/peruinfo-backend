@@ -55,7 +55,6 @@ jobs:
       - name: Install Deta Space CLI and login
         run: |
           curl -fsSL https://deta.space/assets/space-cli.sh | sh
-          space -v
           space login -t ${{ secrets.DETA_TOKEN }}
 
       - name: Deploy to Deta Space
