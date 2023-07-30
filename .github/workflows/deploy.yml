@@ -59,7 +59,7 @@ jobs:
       - name: Install Deta Space CLI
         run: |
           curl -fsSL https://deta.space/assets/space-cli.sh | sh
-          export PATH="/home/runner/.detaspace/bin:$PATH"
+          echo "$HOME/.detaspace/bin" >> $GITHUB_PATH
 
       - name: space help
         run: space --help
