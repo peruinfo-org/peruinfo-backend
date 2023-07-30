@@ -33,6 +33,10 @@ jobs:
             echo "DETA_PROJECT_ID is not set"
             exit 1
           fi
+        env:
+          DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
@@ -50,7 +54,7 @@ jobs:
       - name: Django migrate
         run: python manage.py migrate
 
-      - name: Install Deta Space CLI and login
+      - name: Install Deta Space CLI
         run: curl -fsSL https://deta.space/assets/space-cli.sh | sh
         
       - name: Login to Deta Space
