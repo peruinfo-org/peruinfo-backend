@@ -1,4 +1,4 @@
-name: loada padron sunat
+name: load padron sunat
 on:
   workflow_dispatch: # run once time for month
   schedule:
