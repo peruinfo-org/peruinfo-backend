@@ -1,4 +1,4 @@
-name: deploy to deta space
+name: loada padron sunat
 on:
   workflow_dispatch: # run once time for month
   schedule:
