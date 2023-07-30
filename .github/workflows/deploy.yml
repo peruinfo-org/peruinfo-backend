@@ -2,7 +2,7 @@ name: deploy to deta space
 on:
   push:
     branches:
-      - deploy
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
