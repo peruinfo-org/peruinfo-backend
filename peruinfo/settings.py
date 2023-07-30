@@ -12,24 +12,29 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import environ
-
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# django-environ
+env = environ.Env(
+    # set casting, default value
+    DJANGO_DEBUG=(bool, False),
+    DJANGO_SECRET_KEY=(str, 'secret-key'),
+    DATABASE_URL=(str, 'sqlite:///db.sqlite3'),
+)
+
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = env('DJANGO_DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -88,10 +93,11 @@ WSGI_APPLICATION = 'peruinfo.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    #'default': {
+    #    "ENGINE": "django.db.backends.sqlite3",
+    #    "NAME": BASE_DIR / "db.sqlite3",
+    #}
+    'default': env.db(),
 }
 
 

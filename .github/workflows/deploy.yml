@@ -1,0 +1,64 @@
+name: deploy to deta space
+on:
+  push:
+    branches:
+      - deploy
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: validate environment variables
+        run: |
+          # djagno env variables
+          if [ -z "${{ secrets.DJANGO_DEBUG }}" ]; then
+            echo "DJANGO_DEBUG is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.DJANGO_SECRET_KEY }}" ]; then
+            echo "DJANGO_SECRET_KEY is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.DATABASE_URL }}" ]; then
+            echo "DATABASE_URL is not set"
+            exit 1
+          fi
+          # deta env variables
+          if [ -z "${{ secrets.DETA_TOKEN }}" ]; then
+            echo "DETA_TOKEN is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.DETA_PROJECT_ID }}" ]; then
+            echo "DETA_PROJECT_ID is not set"
+            exit 1
+          fi
+          
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Django validate deploy
+        run: |
+          python manage.py check --deploy
+
+      - name: Django migrate
+        run: |
+          python manage.py migrate
+
+      - name: Install Deta Space CLI and login
+        run: |
+          curl -fsSL https://deta.space/assets/space-cli.sh | sh
+          space -v
+          space login -t ${{ secrets.DETA_TOKEN }}
+
+      - name: Deploy to Deta Space
+        run: |
+          space link -i ${{ secrets.DETA_PROJECT_ID }}
+          space push

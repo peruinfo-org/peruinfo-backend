@@ -7,4 +7,11 @@ micros:
     primary: true
     run: python -m uvicorn peruinfo.asgi:application
     dev: python -m uvicorn peruinfo.asgi:application --reload
-    
+    presets:
+      env:
+        - name: DJANGO_DEBUG
+          description: Enable Django debug mode
+        - name: DJANGO_SECRET_KEY
+          description: Django secret key
+        - name: DATABASE_URL
+          description: Postgres database URL
