@@ -44,5 +44,5 @@ jobs:
       - name: Django validate deploy
         run: python manage.py check --deploy
 
-      - name: Django migrate
+      - name: Django load padron sunat
         run: python manage.py sunat --padron-sunat --size=10000
