@@ -45,17 +45,16 @@ jobs:
           pip install -r requirements.txt
 
       - name: Django validate deploy
-        run: |
-          python manage.py check --deploy
+        run: python manage.py check --deploy
 
       - name: Django migrate
-        run: |
-          python manage.py migrate
+        run: python manage.py migrate
 
       - name: Install Deta Space CLI and login
-        run: |
-          curl -fsSL https://deta.space/assets/space-cli.sh | sh
-          space login -t ${{ secrets.DETA_TOKEN }}
+        run: curl -fsSL https://deta.space/assets/space-cli.sh | sh
+        
+      - name: Login to Deta Space
+        run: space login -t ${{ secrets.DETA_TOKEN }}
 
       - name: Deploy to Deta Space
         run: |
