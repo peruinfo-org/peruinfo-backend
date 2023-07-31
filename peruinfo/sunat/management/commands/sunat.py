@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 import pandas as pd
+import time
 
 from ...models import Padron
 
@@ -18,8 +19,15 @@ class Command(BaseCommand):
         )
         
         parser.add_argument(
+            "--batch-size",
+            type=int,
+            help="Cantidad de registros a cargar por lote",
+        )
+        
+        parser.add_argument(
             "--padron-sunat",
             action="store_true",
+            default=100,
             help="""
                 Cargar el padron de contribuyentes de SUNAT
                 desde http://www2.sunat.gob.pe/padron_reducido_ruc.zip
@@ -29,65 +37,75 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         
         if options['padron_sunat']:
-            self.load_padron_sunat(size=options['size'])
+            self.load_padron_sunat(size=options['size'], batch_size=options['batch_size'])
             self.stdout.write(self.style.SUCCESS('Padron de contribuyentes de SUNAT cargado exitosamente'))
                 
             
-    def load_padron_sunat(self, size: int = None):
+    def load_padron_sunat(self, size: int, batch_size: int):
         """
         Carga el padron de contribuyentes de SUNAT
 
         Args:
-            create (bool, optional): _description_. Defaults to False.
             size (int, optional): _description_. Defaults to None.
+            batch_size (int, optional): _description_. Defaults to 1000.
         """
     
         url = 'http://www2.sunat.gob.pe/padron_reducido_ruc.zip'
         self.stdout.write(f'Descargando {url}')
         
-        df = pd.read_csv(url, encoding='latin-1', sep='|', on_bad_lines='warn')
+        df = pd.read_csv(
+            url, encoding='latin-1', sep='|', 
+            on_bad_lines='warn', dtype={'RUC': str}
+        )
+        
         if size:
             df = df.iloc[:size]
-        
-        df['RUC'] = df['RUC'].astype(str).str.zfill(11)
-        df.set_index('RUC', inplace=True)
-        ruc_list = df.index.tolist()
-        
-        existing_ruc_list, non_existing_ruc_list = self._exists_ruc(ruc_list)
-        
-        create_list = []
-        for ruc in non_existing_ruc_list:
-            row = df.loc[ruc]
-            padron = Padron(
-                ruc=ruc,
-                razon_social=row['NOMBRE O RAZÓN SOCIAL'],
-                estado=row['ESTADO DEL CONTRIBUYENTE'],
-                condicion=row['CONDICIÓN DE DOMICILIO']
-            )
-            create_list.append(padron)
             
             
-        if create_list:
-            self.stdout.write(f'Creando {len(create_list)} registros')
-            Padron.objects.bulk_create(create_list)
+        def process_batch(df: pd.DataFrame):
+            df.set_index('RUC', inplace=True)
+            ruc_list = df.index.tolist()
             
-        update_list = []
-        for ruc in existing_ruc_list:
-            row = df.loc[ruc]
-            padron = Padron(
-                ruc=ruc,
-                razon_social=row['NOMBRE O RAZÓN SOCIAL'],
-                estado=row['ESTADO DEL CONTRIBUYENTE'],
-                condicion=row['CONDICIÓN DE DOMICILIO']
-            )
-            update_list.append(padron)
+            existing_ruc_list, non_existing_ruc_list = self._exists_ruc(ruc_list)
             
-        if update_list:
-            self.stdout.write(f'Actualizando {len(update_list)} registros')
-            Padron.objects.bulk_update(
-                update_list,
-                ['razon_social', 'estado', 'condicion']
-            )
+            create_list = []
+            for ruc in non_existing_ruc_list:
+                row = df.loc[ruc]
+                padron = Padron(
+                    ruc=ruc,
+                    razon_social=row['NOMBRE O RAZÓN SOCIAL'],
+                    estado=row['ESTADO DEL CONTRIBUYENTE'],
+                    condicion=row['CONDICIÓN DE DOMICILIO']
+                )
+                create_list.append(padron)
+                
+                
+            if create_list:
+                self.stdout.write(f'    ∟ Creando {len(create_list)} registros')
+                Padron.objects.bulk_create(create_list)
+                
+            update_list = []
+            for ruc in existing_ruc_list:
+                row = df.loc[ruc]
+                padron = Padron(
+                    ruc=ruc,
+                    razon_social=row['NOMBRE O RAZÓN SOCIAL'],
+                    estado=row['ESTADO DEL CONTRIBUYENTE'],
+                    condicion=row['CONDICIÓN DE DOMICILIO']
+                )
+                update_list.append(padron)
+                
+            if update_list:
+                self.stdout.write(f'    ∟ Actualizando {len(update_list)} registros')
+                Padron.objects.bulk_update(
+                    update_list,
+                    ['razon_social', 'estado', 'condicion']
+                )
+                
+        for i in range(0, len(df), batch_size):
+            self.stdout.write(f'—  Procesando batch {i} - {i+batch_size}')
+            process_batch(df.iloc[i:i+batch_size])
+            time.sleep(1)
 
             
     def _exists_ruc(self, ruc_list: list[str]):

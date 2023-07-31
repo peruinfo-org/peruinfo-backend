@@ -15,3 +15,5 @@ micros:
           description: Django secret key
         - name: DATABASE_URL
           description: Postgres database URL
+    public_routes:
+      - "/*"
