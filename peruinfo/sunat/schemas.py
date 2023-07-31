@@ -15,6 +15,6 @@ class PadronOutSchema(ModelSchema):
 
 
 class PadronFilterSchema(FilterSchema):
-    search: Optional[str] = Field(q='razon_social__search')
+    q: Optional[str] = Field(q=['razon_social__search', 'ruc__iexact'])
  
     

@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # django-environ
 env = environ.Env(
     # set casting, default value
-    DJANGO_DEBUG=(bool, False),
+    DJANGO_DEBUG=(bool, True),
     DJANGO_SECRET_KEY=(str, 'secret-key'),
     DATABASE_URL=(str, 'sqlite:///db.sqlite3'),
 )

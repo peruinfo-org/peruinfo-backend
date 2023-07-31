@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 import pandas as pd
 import time
+
 
 from ...models import Padron
 
@@ -55,7 +57,8 @@ class Command(BaseCommand):
         
         df = pd.read_csv(
             url, encoding='latin-1', sep='|', 
-            on_bad_lines='warn', dtype={'RUC': str}
+            on_bad_lines='warn', dtype={'RUC': str},
+            na_values=['-']
         )
         
         if size:
@@ -91,7 +94,8 @@ class Command(BaseCommand):
                     ruc=ruc,
                     razon_social=row['NOMBRE O RAZÓN SOCIAL'],
                     estado=row['ESTADO DEL CONTRIBUYENTE'],
-                    condicion=row['CONDICIÓN DE DOMICILIO']
+                    condicion=row['CONDICIÓN DE DOMICILIO'],
+                    ultima_actualizacion=timezone.now()
                 )
                 update_list.append(padron)
                 
