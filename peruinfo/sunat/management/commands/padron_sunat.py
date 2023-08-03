@@ -71,8 +71,8 @@ class Command(BaseCommand):
             
             # si encuentra datos, los crea
             if create_list:
-                self.stdout.write(f'    ∟ Creando {len(create_list)} registros')
                 Padron.objects.bulk_create(create_list)
+                self.stdout.write(f'    ∟ Creando {len(create_list)} registros')
 
             # buscar datos de los ruc que existen en la base de datos 
             update_list = []
@@ -83,12 +83,20 @@ class Command(BaseCommand):
                 
             # si encuentra datos, los actualiza
             if update_list:
-                self.stdout.write(f'    ∟ Actualizando {len(update_list)} registros')
                 Padron.objects.bulk_update(
                     update_list,
-                    ['razon_social', 'estado', 'condicion']
+                    [
+                        'razon_social', 'estado', 'condicion', 'tipo_contribuyente',
+                        'ubigeo', 'departamento', 'provincia', 'distrito', 'domicilio_fiscal',
+                        'ciiu_v3_principal', 'ciiu_v3_secundario', 'ciiu_v4_principal',
+                        'numero_empleados', 'tipo_facturacion', 'tipo_contabilidad', 'comercio_exterior',
+                        'ultima_actualizacion'
+                    ]
                 )
-                
+                self.stdout.write(f'    ∟ Actualizando {len(update_list)} registros')
+
+        self.stdout.write(f'Se procesaran {len(df)} registros')
+        # procesar en lotes
         for i in range(0, len(df), batch_size):
             self.stdout.write(f'—  Procesando batch {i} - {i+batch_size}')
             process_batch(df.iloc[i:i+batch_size])
@@ -127,6 +135,7 @@ class Command(BaseCommand):
             # fecha de actualizacion
             ultima_actualizacion=timezone.now()
         )
+        padron.clean()
         return padron
             
     def _exists_ruc(self, ruc_list: list[str]):

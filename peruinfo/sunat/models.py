@@ -7,25 +7,25 @@ class Padron(models.Model):
     """
     ruc = models.CharField(max_length=11, unique=True, primary_key=True)
     
-    razon_social = models.CharField(max_length=300, null=True, blank=True)
+    razon_social = models.TextField(null=True, blank=True)
     estado = models.CharField(max_length=255, null=True, blank=True)
     condicion = models.CharField(max_length=255, null=True, blank=True)
     tipo_contribuyente = models.CharField(max_length=255, null=True, blank=True)
     
-    ubigeo = models.CharField(max_length=8, null=True, blank=True)
-    departamento = models.CharField(max_length=100, null=True, blank=True)
-    provincia = models.CharField(max_length=100, null=True, blank=True)
-    distrito = models.CharField(max_length=150, null=True, blank=True)
-    domicilio_fiscal = models.CharField(max_length=350, null=True, blank=True)
+    ubigeo = models.CharField(max_length=10, null=True, blank=True)
+    departamento = models.CharField(max_length=50, null=True, blank=True)
+    provincia = models.CharField(max_length=50, null=True, blank=True)
+    distrito = models.CharField(max_length=50, null=True, blank=True)
+    domicilio_fiscal = models.TextField(null=True, blank=True)
 
-    ciiu_v3_principal = models.CharField(max_length=255, null=True, blank=True)
-    ciiu_v3_secundario = models.CharField(max_length=255, null=True, blank=True)
-    ciiu_v4_principal = models.CharField(max_length=255, null=True, blank=True)
+    ciiu_v3_principal = models.CharField(max_length=200, null=True, blank=True)
+    ciiu_v3_secundario = models.CharField(max_length=200, null=True, blank=True)
+    ciiu_v4_principal = models.CharField(max_length=200, null=True, blank=True)
 
     numero_empleados = models.IntegerField(null=True, blank=True)
-    tipo_facturacion = models.CharField(max_length=20, null=True, blank=True)
-    tipo_contabilidad = models.CharField(max_length=20, null=True, blank=True)
-    comercio_exterior = models.CharField(max_length=20, null=True, blank=True)
+    tipo_facturacion = models.CharField(max_length=50, null=True, blank=True)
+    tipo_contabilidad = models.CharField(max_length=50, null=True, blank=True)
+    comercio_exterior = models.CharField(max_length=50, null=True, blank=True)
 
     ultima_actualizacion = models.DateField(null=True, blank=True)
     
