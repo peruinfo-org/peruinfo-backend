@@ -45,4 +45,4 @@ jobs:
         run: python manage.py check --deploy
 
       - name: Django load padron sunat
-        run: python manage.py sunat --padron-sunat --batch-size=10000
+        run: python manage.py padron-sunat --batch-size=10000
