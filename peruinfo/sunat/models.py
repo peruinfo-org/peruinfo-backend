@@ -7,12 +7,12 @@ class Padron(models.Model):
     """
     ruc = models.CharField(max_length=11, unique=True, primary_key=True)
     
-    razon_social = models.TextField(null=True, blank=True)
+    razon_social = models.CharField(max_length=255, null=True, blank=True)
     estado = models.CharField(max_length=255, null=True, blank=True)
     condicion = models.CharField(max_length=255, null=True, blank=True)
     tipo_contribuyente = models.CharField(max_length=255, null=True, blank=True)
     
-    ubigeo = models.CharField(max_length=10, null=True, blank=True)
+    ubigeo = models.CharField(max_length=20, null=True, blank=True)
     departamento = models.CharField(max_length=50, null=True, blank=True)
     provincia = models.CharField(max_length=50, null=True, blank=True)
     distrito = models.CharField(max_length=50, null=True, blank=True)
@@ -33,7 +33,7 @@ class Padron(models.Model):
         verbose_name = 'Padron'
         verbose_name_plural = 'Padrones'
         indexes = [
-            models.Index(fields=['razon_social', 'ruc']),
+            models.Index(fields=['razon_social']),
         ]
 
     

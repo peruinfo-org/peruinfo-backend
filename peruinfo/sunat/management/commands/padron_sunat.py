@@ -53,9 +53,6 @@ class Command(BaseCommand):
         
         if size:
             df = df.iloc[:size]
-            
-        # domicilio fiscal
-        df['domicilio_fiscal'] = df.apply(self._domicilio_fiscal, axis=1)
 
         def process_batch(df: pd.DataFrame):
             ruc_list = df.index.tolist()
@@ -96,6 +93,10 @@ class Command(BaseCommand):
                 self.stdout.write(f'    ∟ Actualizando {len(update_list)} registros')
 
         self.stdout.write(f'Se procesaran {len(df)} registros')
+
+        # domicilio fiscal
+        df['domicilio_fiscal'] = df.apply(self._domicilio_fiscal, axis=1)
+        df.fillna('', inplace=True)
         # procesar en lotes
         for i in range(0, len(df), batch_size):
             self.stdout.write(f'—  Procesando batch {i} - {i+batch_size}')
@@ -110,6 +111,7 @@ class Command(BaseCommand):
         Returns:
             Padron: Objeto Padron
         """
+        row = row.fillna('')
         padron = Padron(
             ruc=row.name,
             # datos generales
@@ -118,7 +120,7 @@ class Command(BaseCommand):
             condicion=row['CONDICIÓN DE DOMICILIO'],
             tipo_contribuyente=row['Tipo'],
             # direccion
-            ubigeo=row['UBIGEO'],
+            ubigeo=row['ubigeo'],
             departamento=row['Departamento'],
             provincia=row['Provincia'],
             distrito=row['Distrito'],
@@ -128,7 +130,7 @@ class Command(BaseCommand):
             ciiu_v3_secundario=row['Actividad_Economica_CIIU_revision3_Secundaria'],
             ciiu_v4_principal=row['Actividad_Economica_CIIU_revision4_Principal'],
             # datos adicionales
-            numero_empleados=row['NroTrab'],
+            numero_empleados=row['NroTrab'] or None,
             tipo_facturacion=row['TipoFacturacion'],
             tipo_contabilidad=row['TipoContabilidad'],
             comercio_exterior=row['ComercioExterior'],
@@ -205,8 +207,10 @@ class Command(BaseCommand):
         url = 'http://www2.sunat.gob.pe/padron_reducido_ruc.zip'
         file_path = self._download(url)
         df = pd.read_csv(
-            file_path, 
-            encoding='latin-1', sep='|', on_bad_lines='warn', 
+            url, 
+            encoding='latin1',
+            quoting=3,
+            sep='|',
             dtype={
                 'RUC': str,
                 'UBIGEO': str,
@@ -215,7 +219,9 @@ class Command(BaseCommand):
                 'CONDICIÓN DE DOMICILIO': str,
             }, 
             na_values=['-'],
-            index_col='RUC')
+            escapechar='\\',
+            index_col='RUC',)
+        self.stdout.write(f'    ∟ {len(df)} registros, fuente: SUNAT')
         return df
     
     def _read_padron_sunat_datosabiertos(self):
@@ -236,6 +242,7 @@ class Command(BaseCommand):
             na_values=['NO DISPONIBLE'],
             index_col='RUC'
         )
+        self.stdout.write(f"    ∟ {len(df)} registros, fuentes: datosaabiertos.gob.pe")
         # drop na
         not_include = [
             'PERSONA NATURAL SIN EMPRESA',
@@ -245,8 +252,10 @@ class Command(BaseCommand):
             'SOCIEDAD CONYUGAL SIN EMPRESA',
             'SOCIEDAD CONYUGAL CON EMPRESA UNIPERSONAL'
         ]
+        df.rename(columns={'UBIGEO': 'ubigeo'}, inplace=True)
         df = df[~df['Tipo'].isin(not_include)]
-        df.dropna(inplace=True)
+        #df.dropna(inplace=True)
+        self.stdout.write(f"    ∟ {len(df)} registros, fuentes: datosaabiertos.gob.pe")
         return df
         
     def _download(self, url: str):
