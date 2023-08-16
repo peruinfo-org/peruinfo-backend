@@ -95,8 +95,8 @@ class Command(BaseCommand):
         self.stdout.write(f'Se procesaran {len(df)} registros')
 
         # domicilio fiscal
-        df['domicilio_fiscal'] = df.apply(self._domicilio_fiscal, axis=1)
         df.fillna('', inplace=True)
+        df['domicilio_fiscal'] = df.apply(self._domicilio_fiscal, axis=1)
         # procesar en lotes
         for i in range(0, len(df), batch_size):
             self.stdout.write(f'—  Procesando batch {i} - {i+batch_size}')
@@ -207,7 +207,7 @@ class Command(BaseCommand):
         url = 'http://www2.sunat.gob.pe/padron_reducido_ruc.zip'
         file_path = self._download(url)
         df = pd.read_csv(
-            url, 
+            file_path, 
             encoding='latin1',
             quoting=3,
             sep='|',
