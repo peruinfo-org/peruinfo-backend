@@ -23,4 +23,23 @@ class Padron(models.Model):
     def __str__(self) -> str:
         return f'{self.ruc} - {self.razon_social}'
     
+
+class Establecimiento(models.Model):
+    """
+    Modelo que representa los establecimientos de un contribuyente
+    """
+    ruc = models.ForeignKey(Padron, on_delete=models.CASCADE)
+    codigo = models.CharField(max_length=255, null=True, blank=True)
+    tipo = models.CharField(max_length=255, null=True, blank=True)
+    direccion = models.CharField(max_length=255, null=True, blank=True)
+    actividad_economica = models.CharField(max_length=255, null=True, blank=True)
     
+    class Meta:
+        verbose_name = 'Establecimiento'
+        verbose_name_plural = 'Establecimientos'
+        
+    def __str__(self) -> str:
+        return f'{self.ruc} - {self.codigo} - {self.tipo}'
+
+
+class 
