@@ -115,7 +115,7 @@ class Command(BaseCommand):
             actividad_economica = actividad_economica.find_element(By.TAG_NAME, 'table').get_attribute('outerHTML')
             df = pd.read_html(actividad_economica)[0]
             df = df[0].str.split(' - ', expand=True).rename(columns={0:'tipo', 1:'codigo', 2:'descripcion'})
-            result = df.set_index('tipo').to_json(orient='index')
+            result = df.set_index('tipo').to_dict(orient='index')
             if verbose:
                 self.stdout.write('Actividad economica')
                 rich.print(result)
@@ -131,7 +131,7 @@ class Command(BaseCommand):
             comprobante = comprobante.find_element(By.XPATH, '../..')\
                 .find_element(By.TAG_NAME, 'table').get_attribute('outerHTML')
             df = pd.read_html(comprobante)[0]
-            result = df[0].to_json(orient='values')
+            result = df[0].tolist()
             if verbose:
                 self.stdout.write('Comprobantes de pago')
                 rich.print(result)
