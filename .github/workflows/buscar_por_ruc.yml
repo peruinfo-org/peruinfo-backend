@@ -1,6 +1,5 @@
 name: buscar por ruc
 on:
-  workflow_dispatch: # run once time for month
   schedule:
     - cron: '0 */1 * * *'
 jobs:
@@ -41,8 +40,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Django validate deploy
-        run: python manage.py check --deploy
-
-      - name: Django load padron sunat
+      - name: Buscar por ruc
         run: python manage.py buscar_ruc --size 1000
