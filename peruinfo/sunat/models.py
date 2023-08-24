@@ -29,7 +29,10 @@ class Padron(models.Model):
 
     ultima_actualizacion = models.DateField(null=True, blank=True)
     
+    # busqueda por ruc
     ultima_consulta_ruc = models.DateField(null=True, blank=True)
+    actividad_economica = models.JSONField(null=True, blank=True)
+    comprobantes = models.JSONField(null=True, blank=True)
     
     class Meta:
         verbose_name = 'Padron'

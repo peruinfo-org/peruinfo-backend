@@ -9,3 +9,6 @@ requests
 tqdm
 httpx
 selenium
+webdriver-manager
+rich
+lxml
