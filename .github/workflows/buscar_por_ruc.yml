@@ -3,7 +3,7 @@ on:
   schedule:
     - cron: '0 */1 * * *'
 jobs:
-  deploy:
+  bucar_ruc:
     runs-on: ubuntu-latest
 
     env:
