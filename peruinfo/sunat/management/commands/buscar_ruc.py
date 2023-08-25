@@ -3,7 +3,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-options = webdriver.ChromeOptions()
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
@@ -32,8 +31,8 @@ class Command(BaseCommand):
         if options['ruc']:
             ruc = options['ruc']
             driver = self.get_driver()
-            self.buscar_ruc(driver, ruc)
-            self.get_data(driver, ruc,  verbose=True)
+            if self.buscar_ruc(driver, ruc):
+                self.get_data(driver, ruc,  verbose=True)
         else:
 
             driver = self.get_driver()
@@ -82,7 +81,7 @@ class Command(BaseCommand):
             sleep(1)
             self.stdout.write('⚠️  pagina no cargada ' + ruc)
             self.error += 1
-            return self.buscar_ruc(driver, ruc)
+            return 
         self.stdout.write('✅ ruc encontrado ' + ruc)
         self.success += 1
         return elem

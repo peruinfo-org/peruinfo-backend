@@ -41,4 +41,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Buscar por ruc
-        run: python manage.py buscar_ruc --size 500
+        run: python manage.py buscar_ruc --size 100
