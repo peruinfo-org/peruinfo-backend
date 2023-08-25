@@ -21,6 +21,7 @@ class Command(BaseCommand):
     help = 'Buscar datos en sunat por ruc'
     success = 0
     error = 0
+    url = 'https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/FrameCriterioBusquedaWeb.jsp'
     
     def add_arguments(self, parser):
         parser.add_argument('--ruc', type=str, help='Ruc a buscar')
@@ -39,7 +40,7 @@ class Command(BaseCommand):
             padron = self.get_padron(size=options['size'])
             self.stdout.write(f'Se procesaran {len(padron)} ruc')
             for p in padron:
-                if self.buscar_ruc(driver, p.ruc):
+                if not self.buscar_ruc(driver, p.ruc):
                     continue
                 self.get_data(driver, p.ruc, verbose=True)
                 self.go_back(driver)
@@ -57,12 +58,11 @@ class Command(BaseCommand):
         return padron
             
     def get_driver(self):
-        url = 'https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/FrameCriterioBusquedaWeb.jsp'
         options = webdriver.ChromeOptions()
         options.add_argument("--headless=new")
         service = ChromeService(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
-        driver.get(url)
+        driver.get(self.url)
         return driver
     
     def go_back(self, driver):
@@ -70,6 +70,8 @@ class Command(BaseCommand):
         sleep(2)
     
     def buscar_ruc(self, driver, ruc):
+        if driver.current_url != self.url:
+            driver.get(self.url)
         elem = driver.find_element(By.ID, 'txtRuc')
         elem.clear()
         elem.send_keys(ruc)
