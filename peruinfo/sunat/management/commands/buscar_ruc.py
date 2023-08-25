@@ -39,7 +39,8 @@ class Command(BaseCommand):
             padron = self.get_padron(size=options['size'])
             self.stdout.write(f'Se procesaran {len(padron)} ruc')
             for p in padron:
-                self.buscar_ruc(driver, p.ruc)
+                if self.buscar_ruc(driver, p.ruc):
+                    continue
                 self.get_data(driver, p.ruc, verbose=True)
                 self.go_back(driver)
 
